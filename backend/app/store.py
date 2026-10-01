@@ -43,7 +43,13 @@ class Store:
             {"label": "待处理", "value": sum(int(item["pending"]) for item in modules)},
             {"label": "异常量", "value": sum(int(item["abnormal"]) for item in modules)},
         ]
-        return {"cards": cards, "modules": modules}
+        # 绿地总览的在管面积随接管明细实时重算，避免读到过期缓存。
+        plot_summary: dict[str, Any] = {}
+        if "plot" in self._tables:
+            from app.services.plot import PlotService
+
+            plot_summary = PlotService().summary()
+        return {"cards": cards, "modules": modules, "plotSummary": plot_summary}
 
 
 store = Store()
